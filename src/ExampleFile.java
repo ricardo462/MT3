@@ -1,14 +1,12 @@
 import javax.imageio.IIOException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class ExampleFile {
 
-    public static void getFile(String fileName) throws FileError{
+    public static void readFile(String fileName) throws FileError{
         InputStream inputStream = null;
         try{
             File file = new File(fileName);
@@ -22,7 +20,7 @@ public class ExampleFile {
                 try {
                     inputStream.close();
                 }
-                catch (IIOException e){
+                catch (IOException e){
                     throw new FileError("Couldn't close the file");
                 }
             }
@@ -33,21 +31,33 @@ public class ExampleFile {
 
     }
 
-    public static void main(String[] args) {
-        while(true){
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("File name ?");
-            String fileName = scanner.nextLine();
-            String[] array = fileName.split("\\.");
-            if (array.length == 2){
-                if (fileName.equals(".")){
-                    break;
-                }
-                else System.out.println(Arrays.toString(array));
-            }
-            else{
+    public static Scanner fileScanner(File file) throws FileError{
+        try{
+            Scanner scanner = new Scanner(file);
+            return scanner;
+        } catch (FileNotFoundException e) {
+            throw new FileError("Couldn't build a file scanner");
+        }
+    }
 
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Scanner fScanner = null;
+        String fileName = null;
+        while(true){
+            try {
+                System.out.println("File name ?");
+                fileName = scanner.nextLine();
+                readFile(fileName);
+                fScanner = fileScanner(new File(fileName));
+                break;
+            }
+            catch (FileError e) {
+                System.out.println("Enter a valid path or file name");
             }
         }
+        String line = fScanner.nextLine();
+        String[] info = line.split("    ");
+        System.out.println(Arrays.toString(info));
     }
 }
